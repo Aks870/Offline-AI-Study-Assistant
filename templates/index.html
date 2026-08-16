@@ -1,0 +1,1154 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Offline AI Study Assistant</title>
+
+
+    <!-- Markdown Renderer -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        body {
+
+            font-family: Arial, sans-serif;
+
+            background: #f4f7fb;
+
+            color: #1f2937;
+
+            min-height: 100vh;
+        }
+
+
+        .container {
+
+            width: 90%;
+
+            max-width: 900px;
+
+            margin: 50px auto;
+        }
+
+
+        .hero {
+
+            text-align: center;
+
+            margin-bottom: 30px;
+        }
+
+
+        .badge {
+
+            display: inline-block;
+
+            padding: 7px 14px;
+
+            background: #e0e7ff;
+
+            color: #3730a3;
+
+            border-radius: 20px;
+
+            font-size: 12px;
+
+            font-weight: bold;
+
+            letter-spacing: 0.5px;
+
+            margin-bottom: 15px;
+        }
+
+
+        h1 {
+
+            font-size: 38px;
+
+            margin-bottom: 10px;
+        }
+
+
+        .subtitle {
+
+            color: #6b7280;
+
+            font-size: 16px;
+        }
+
+
+        .card {
+
+            background: white;
+
+            padding: 30px;
+
+            border-radius: 14px;
+
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+
+            margin-bottom: 25px;
+        }
+
+
+        h2 {
+
+            margin-bottom: 18px;
+
+            font-size: 22px;
+        }
+
+
+        .label {
+
+            font-size: 13px;
+
+            font-weight: bold;
+
+            color: #4b5563;
+
+            margin-bottom: 8px;
+        }
+
+
+        /* Answer Mode */
+
+        .mode-section {
+
+            margin-bottom: 20px;
+        }
+
+
+        .mode-buttons {
+
+            display: flex;
+
+            gap: 10px;
+
+            flex-wrap: wrap;
+        }
+
+
+        .mode-btn {
+
+            width: auto;
+
+            margin-top: 0;
+
+            padding: 10px 16px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #e5e7eb;
+
+            color: #374151;
+
+            font-size: 14px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+
+        .mode-btn:hover {
+
+            background: #d1d5db;
+        }
+
+
+        .mode-btn.active {
+
+            background: #4f46e5;
+
+            color: white;
+        }
+
+
+        /* Question */
+
+        textarea {
+
+            width: 100%;
+
+            min-height: 150px;
+
+            resize: vertical;
+
+            border: 1px solid #d1d5db;
+
+            border-radius: 10px;
+
+            padding: 15px;
+
+            font-size: 16px;
+
+            outline: none;
+
+            transition: border 0.2s;
+
+            margin-top: 8px;
+        }
+
+
+        textarea:focus {
+
+            border-color: #4f46e5;
+        }
+
+
+        /* Solve Button */
+
+        #solveButton {
+
+            width: 100%;
+
+            margin-top: 15px;
+
+            padding: 14px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            background: #4f46e5;
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+
+        #solveButton:hover {
+
+            background: #4338ca;
+        }
+
+
+        #solveButton:disabled {
+
+            background: #9ca3af;
+
+            cursor: not-allowed;
+        }
+
+
+        /* Status */
+
+        .status {
+
+            text-align: center;
+
+            margin-top: 15px;
+
+            color: #6b7280;
+        }
+
+
+        .error {
+
+            color: #dc2626;
+        }
+
+
+        /* Answer */
+
+        .answer {
+
+            display: none;
+        }
+
+
+        .question-box {
+
+            background: #f3f4f6;
+
+            padding: 15px;
+
+            border-radius: 10px;
+
+            margin-bottom: 18px;
+        }
+
+
+        .answer-box {
+
+            background: #eef2ff;
+
+            padding: 20px;
+
+            border-radius: 10px;
+
+            line-height: 1.8;
+
+            font-size: 16px;
+
+        }
+
+
+        #answerText {
+
+            font-size: 16px;
+
+        }
+
+
+        /* Markdown Answer Formatting */
+
+        #answerText h1,
+        #answerText h2,
+        #answerText h3,
+        #answerText h4 {
+
+            margin-top: 18px;
+
+            margin-bottom: 10px;
+
+            color: #1f2937;
+
+        }
+
+
+        #answerText h1 {
+
+            font-size: 25px;
+
+        }
+
+
+        #answerText h2 {
+
+            font-size: 22px;
+
+        }
+
+
+        #answerText h3 {
+
+            font-size: 19px;
+
+        }
+
+
+        #answerText h4 {
+
+            font-size: 17px;
+
+        }
+
+
+        #answerText p {
+
+            margin-bottom: 12px;
+
+        }
+
+
+        #answerText ul,
+        #answerText ol {
+
+            margin-top: 8px;
+
+            margin-bottom: 15px;
+
+            padding-left: 25px;
+
+        }
+
+
+        #answerText li {
+
+            margin-bottom: 7px;
+
+        }
+
+
+        #answerText strong {
+
+            font-weight: bold;
+
+            color: #111827;
+
+        }
+
+
+        #answerText code {
+
+            background: #e5e7eb;
+
+            padding: 2px 5px;
+
+            border-radius: 4px;
+
+            font-size: 14px;
+
+        }
+
+
+        #answerText blockquote {
+
+            border-left: 4px solid #4f46e5;
+
+            padding-left: 15px;
+
+            margin: 15px 0;
+
+            color: #4b5563;
+
+        }
+
+
+        /* Answer Action Buttons */
+
+        .answer-actions {
+
+            display: flex;
+
+            gap: 10px;
+
+            margin-top: 15px;
+
+            flex-wrap: wrap;
+        }
+
+
+        .action-btn {
+
+            flex: 1;
+
+            min-width: 140px;
+
+            padding: 11px 16px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #4f46e5;
+
+            color: white;
+
+            font-size: 14px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+        }
+
+
+        .action-btn:hover {
+
+            background: #4338ca;
+
+        }
+
+
+        .new-question-btn {
+
+            background: #6b7280;
+
+        }
+
+
+        .new-question-btn:hover {
+
+            background: #4b5563;
+
+        }
+
+
+        /* Footer */
+
+        footer {
+
+            text-align: center;
+
+            margin-top: 25px;
+
+            color: #9ca3af;
+
+            font-size: 13px;
+        }
+
+
+        /* Mobile */
+
+        @media (max-width: 600px) {
+
+            .container {
+
+                width: 94%;
+
+                margin: 30px auto;
+            }
+
+
+            .card {
+
+                padding: 20px;
+            }
+
+
+            h1 {
+
+                font-size: 30px;
+            }
+
+
+            .mode-buttons {
+
+                flex-direction: column;
+            }
+
+
+            .mode-btn {
+
+                width: 100%;
+            }
+
+
+            .answer-actions {
+
+                flex-direction: column;
+            }
+
+
+            .action-btn {
+
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <main class="container">
+
+
+        <!-- Header -->
+
+        <section class="hero">
+
+            <p class="badge">
+
+                OFFLINE AI STUDY ASSISTANT
+
+            </p>
+
+
+            <h1>
+
+                Ask & Learn
+
+            </h1>
+
+
+            <p class="subtitle">
+
+                Ask any study-related question and get an AI-generated
+                explanation using a local AI model.
+
+            </p>
+
+        </section>
+
+
+
+        <!-- Question Card -->
+
+        <section class="card">
+
+
+            <h2>
+
+                Ask Your Question
+
+            </h2>
+
+
+            <!-- Answer Mode -->
+
+            <div class="mode-section">
+
+
+                <p class="label">
+
+                    ANSWER MODE
+
+                </p>
+
+
+                <div class="mode-buttons">
+
+
+                    <button
+                        type="button"
+                        class="mode-btn active"
+                        data-mode="simple"
+                    >
+
+                        Simple Answer
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="mode-btn"
+                        data-mode="detailed"
+                    >
+
+                        Detailed Explanation
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="mode-btn"
+                        data-mode="exam"
+                    >
+
+                        Exam Answer
+
+                    </button>
+
+
+                </div>
+
+            </div>
+
+
+
+            <!-- Question Input -->
+
+            <p class="label">
+
+                QUESTION
+
+            </p>
+
+
+            <textarea
+                id="question"
+                placeholder="Example: Explain Machine Learning..."
+            ></textarea>
+
+
+
+            <!-- Solve Button -->
+
+            <button id="solveButton">
+
+                Solve Question
+
+            </button>
+
+
+            <p id="status" class="status"></p>
+
+
+        </section>
+
+
+
+        <!-- Answer Section -->
+
+        <section
+            id="answerSection"
+            class="card answer"
+        >
+
+
+            <h2>
+
+                Answer
+
+            </h2>
+
+
+
+            <!-- Question -->
+
+            <div class="question-box">
+
+
+                <p class="label">
+
+                    YOUR QUESTION
+
+                </p>
+
+
+                <p id="matchedQuestion"></p>
+
+
+            </div>
+
+
+
+            <!-- Answer -->
+
+            <div class="answer-box">
+
+
+                <p class="label">
+
+                    ANSWER
+
+                </p>
+
+
+                <div id="answerText"></div>
+
+
+            </div>
+
+
+
+            <!-- Answer Actions -->
+
+            <div class="answer-actions">
+
+
+                <button
+                    id="copyButton"
+                    class="action-btn"
+                    type="button"
+                >
+
+                    📋 Copy Answer
+
+                </button>
+
+
+                <button
+                    id="newQuestionButton"
+                    class="action-btn new-question-btn"
+                    type="button"
+                >
+
+                    🔄 New Question
+
+                </button>
+
+
+            </div>
+
+
+        </section>
+
+
+
+        <footer>
+
+            Offline AI Study Assistant
+            • Powered by Qwen3 & Ollama
+
+        </footer>
+
+
+    </main>
+
+
+
+    <script>
+
+
+        /* Elements */
+
+        const questionInput =
+            document.getElementById("question");
+
+
+        const solveButton =
+            document.getElementById("solveButton");
+
+
+        const status =
+            document.getElementById("status");
+
+
+        const answerSection =
+            document.getElementById("answerSection");
+
+
+        const matchedQuestion =
+            document.getElementById("matchedQuestion");
+
+
+        const answerText =
+            document.getElementById("answerText");
+
+
+        const copyButton =
+            document.getElementById("copyButton");
+
+
+        const newQuestionButton =
+            document.getElementById("newQuestionButton");
+
+
+
+        /* Selected Mode */
+
+        let selectedMode = "simple";
+
+
+
+        /* Mode Buttons */
+
+        const modeButtons =
+            document.querySelectorAll(".mode-btn");
+
+
+        modeButtons.forEach((button) => {
+
+
+            button.addEventListener("click", () => {
+
+
+                modeButtons.forEach((btn) => {
+
+                    btn.classList.remove("active");
+
+                });
+
+
+                button.classList.add("active");
+
+
+                selectedMode =
+                    button.dataset.mode;
+
+            });
+
+        });
+
+
+
+        /* Solve Question */
+
+        solveButton.addEventListener(
+            "click",
+            async () => {
+
+
+                const question =
+                    questionInput.value.trim();
+
+
+                answerSection.style.display =
+                    "none";
+
+
+                status.className =
+                    "status";
+
+
+                if (!question) {
+
+
+                    status.textContent =
+                        "Please enter a question.";
+
+
+                    status.classList.add(
+                        "error"
+                    );
+
+
+                    return;
+
+                }
+
+
+
+                /* Loading */
+
+                solveButton.disabled = true;
+
+
+                solveButton.textContent =
+                    "Thinking...";
+
+
+                status.textContent =
+                    "AI is preparing your answer...";
+
+
+
+                try {
+
+
+                    const response =
+                        await fetch(
+                            "/solve",
+                            {
+
+                                method: "POST",
+
+                                headers: {
+
+                                    "Content-Type":
+                                        "application/json"
+
+                                },
+
+                                body:
+                                    JSON.stringify({
+
+                                        question:
+                                            question,
+
+                                        mode:
+                                            selectedMode
+
+                                    })
+
+                            }
+                        );
+
+
+
+                    const data =
+                        await response.json();
+
+
+
+                    if (!response.ok) {
+
+                        throw new Error(
+
+                            data.error ||
+                            "Something went wrong."
+
+                        );
+
+                    }
+
+
+
+                    /* Display Question */
+
+                    matchedQuestion.textContent =
+                        data.question;
+
+
+
+                    /* Display Markdown Answer */
+
+                    answerText.innerHTML =
+                        marked.parse(
+                            data.answer
+                        );
+
+
+
+                    answerSection.style.display =
+                        "block";
+
+
+                    status.textContent =
+                        "Answer generated successfully!";
+
+
+                    /* Scroll to Answer */
+
+                    answerSection.scrollIntoView({
+
+                        behavior: "smooth",
+
+                        block: "start"
+
+                    });
+
+
+                }
+
+
+                catch (error) {
+
+
+                    status.textContent =
+                        error.message;
+
+
+                    status.classList.add(
+                        "error"
+                    );
+
+                }
+
+
+                finally {
+
+
+                    solveButton.disabled =
+                        false;
+
+
+                    solveButton.textContent =
+                        "Solve Question";
+
+                }
+
+            }
+        );
+
+
+
+        /* Copy Answer */
+
+        copyButton.addEventListener(
+            "click",
+            async () => {
+
+
+                const answer =
+                    answerText.innerText.trim();
+
+
+                if (!answer) {
+
+                    return;
+
+                }
+
+
+                try {
+
+
+                    await navigator.clipboard.writeText(
+                        answer
+                    );
+
+
+                    copyButton.textContent =
+                        "✅ Copied!";
+
+
+                    setTimeout(() => {
+
+                        copyButton.textContent =
+                            "📋 Copy Answer";
+
+                    }, 2000);
+
+
+                }
+
+
+                catch (error) {
+
+
+                    copyButton.textContent =
+                        "❌ Copy Failed";
+
+
+                    setTimeout(() => {
+
+                        copyButton.textContent =
+                            "📋 Copy Answer";
+
+                    }, 2000);
+
+                }
+
+            }
+        );
+
+
+
+        /* New Question */
+
+        newQuestionButton.addEventListener(
+            "click",
+            () => {
+
+
+                questionInput.value = "";
+
+
+                matchedQuestion.textContent =
+                    "";
+
+
+                answerText.innerHTML =
+                    "";
+
+
+                answerSection.style.display =
+                    "none";
+
+
+                status.textContent =
+                    "";
+
+
+                status.className =
+                    "status";
+
+
+                questionInput.focus();
+
+            }
+        );
+
+
+
+        /* Ctrl + Enter */
+
+        questionInput.addEventListener(
+            "keydown",
+            (event) => {
+
+
+                if (
+                    event.ctrlKey &&
+                    event.key === "Enter"
+                ) {
+
+                    solveButton.click();
+
+                }
+
+            }
+        );
+
+
+    </script>
+
+
+</body>
+
+</html>
+```
