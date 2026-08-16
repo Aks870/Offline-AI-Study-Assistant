@@ -12,6 +12,10 @@ The application runs locally using **Ollama** and the **Qwen3 1.7B** language mo
 
 A student can enter any academic question and choose how they want the answer:
 
+## 📸 Screenshot
+
+![Offline AI Study Assistant](image/offline-ai-study-assistant.png)
+
 * **Simple Answer** — short and easy explanation
 * **Detailed Explanation** — complete teaching-style explanation
 * **Exam Answer** — structured answer suitable for exam preparation
